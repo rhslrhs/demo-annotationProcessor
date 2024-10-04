@@ -12,6 +12,15 @@ java {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+bootJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+
 
 configurations {
     compileOnly {
@@ -31,15 +40,17 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'com.google.auto.service:auto-service-annotations:1.0-rc7'
-    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc7'
+
+    // 애노테이션 프로세서 의존성 추가
+    implementation 'com.google.auto.service:auto-service:1.0'
+    annotationProcessor 'com.google.auto.service:auto-service:1.0'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
 
-
-// Annotation Processing 설정
 tasks.withType(JavaCompile) {
-    options.annotationProcessorPath = configurations.annotationProcessor
+    options.annotationProcessorGeneratedSourcesDirectory = file("$buildDir/generated/sources/annotationProcessor/java/main")
+    options.compilerArgs += ['-XprintProcessorInfo', '-XprintRounds']
 }
